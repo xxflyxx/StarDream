@@ -4,6 +4,7 @@
 #include "HeadMountedDisplayFunctionLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "Components/GameFrameworkComponentManager.h"
 #include "Components/InputComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
@@ -74,6 +75,14 @@ void AStarDreamCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 
 	// VR headset functionality
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AStarDreamCharacter::OnResetVR);
+}
+
+void AStarDreamCharacter::PreInitializeComponents()
+{
+	Super::PreInitializeComponents();
+
+	if (GetWorld())
+		GetGameInstance()->GetSubsystem<UGameFrameworkComponentManager>()->AddReceiver(this);
 }
 
 
