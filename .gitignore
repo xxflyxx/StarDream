@@ -1,0 +1,48 @@
+# Ignore VS / VS Code settings directory
+.vs
+.vscode
+.vsconfig
+
+# Ignore CLion directory
+.idea/
+
+# Explcitly ignore Mac DS_Store files, regardless of where they are
+.DS_Store
+
+# Projects and makefiles
+*.cmake
+*.mk
+*.dsp
+*.dsw
+*.csproj
+*.vcproj
+*.vcxproj
+*.vcxproj.filters
+*.sln
+*.xcodeproj
+*.xcconfig
+*.vsprops
+*.snippet
+Dockerfile
+Makefile
+Makefile.*
+Settings.settings
+
+# Builds
+Build/*
+
+Intermediate/*
+Saved/*
+DerivedDataCache/*
+/Content/Developers
+
+*.dmp
+/Binaries/PS5/*
+/Binaries/Win64/*.exp
+/Binaries/Win64/*.lib
+Plugins
+/Content/Megascans
+/package/client
+Releases
+Developer
+__pycache__
