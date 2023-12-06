@@ -35,14 +35,12 @@ Intermediate/*
 Saved/*
 DerivedDataCache/*
 /Content/Developers
+Plugins/**/Intermediate/*
 
 *.dmp
 /Binaries/PS5/*
 /Binaries/Win64/*.exp
 /Binaries/Win64/*.lib
-Plugins
-/Content/Megascans
-/package/client
 Releases
 Developer
 __pycache__

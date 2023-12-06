@@ -1,0 +1,8 @@
+{
+	"BuildId": "17155196",
+	"Modules": 
+	{
+		"GameplayMessageNodes": "UE4Editor-GameplayMessageNodes.dll",
+		"GameplayMessageRuntime": "UE4Editor-GameplayMessageRuntime.dll"
+	}
+}
