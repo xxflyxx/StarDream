@@ -1,0 +1,8 @@
+{
+	"BuildId": "17155196",
+	"Modules": 
+	{
+		"DreamCore": "UE4Editor-DreamCore.dll",
+		"DreamEpibolyCore": "UE4Editor-DreamEpibolyCore.dll"
+	}
+}

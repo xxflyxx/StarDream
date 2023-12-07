@@ -2,6 +2,7 @@
 
 #include "StarDreamGameMode.h"
 #include "StarDreamCharacter.h"
+#include "StarDreamGameState.h"
 #include "UObject/ConstructorHelpers.h"
 
 AStarDreamGameMode::AStarDreamGameMode()
@@ -12,4 +13,5 @@ AStarDreamGameMode::AStarDreamGameMode()
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
 	}
+	GameStateClass = AStarDreamGameState::StaticClass();
 }
