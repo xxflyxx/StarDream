@@ -3,11 +3,25 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "GamePhaseMessage.h"
+#include "MessageGamePhase.h"
 #include "Components/ActorComponent.h"
 #include "Components/GameStateComponent.h"
 #include "GamePhaseComponent.generated.h"
 
+USTRUCT(BlueprintType)
+struct FPhaseWidget
+{
+	GENERATED_BODY()
+
+	UPROPERTY(EditAnywhere)
+	EGamePhase Phase = EGamePhase::Waiting;
+	UPROPERTY(EditAnywhere)
+	FGameplayTag SlotTag;
+	UPROPERTY(EditAnywhere)
+	TSubclassOf<UUserWidget> Widget;
+	UPROPERTY(EditAnywhere)
+	int Priority = 1;
+};
 
 UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
 class DREAMEPIBOLYCORE_API UGamePhaseComponent : public UGameFrameworkComponent
@@ -21,11 +35,9 @@ public:
 	float GetServerTimeSeconds() const;
 	UFUNCTION(BlueprintCallable)
 	float GetTimeSecondsSinceGameStart() const;
-	
-	// DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnServerTick, float, ServerTime, float, DeltaTime);
-	// UPROPERTY(BlueprintAssignable)
-	// FOnServerTick OnServerTick;
 
+	UPROPERTY(EditAnywhere)
+	TArray<FPhaseWidget> PhaseWidgets;
 protected:
 	virtual void BeginPlay() override;
 	void ChangePhase(EGamePhase NewPhase);

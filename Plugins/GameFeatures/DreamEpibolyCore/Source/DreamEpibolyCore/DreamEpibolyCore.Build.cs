@@ -41,7 +41,9 @@ public class DreamEpibolyCore : ModuleRules
 				"Niagara",
 				"ModularGameplay",
 				"GameplayMessageRuntime",
-				"GameplayTags"
+				"GameplayTags",
+				"UIExtension",
+				"UMG"
 				// ... add private dependencies that you statically link with here ...	
 			}
 			);

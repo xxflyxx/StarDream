@@ -2,23 +2,23 @@
 
 
 #include "GamePhaseComponent.h"
+
+#include "UIExtensionSystem.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Net/UnrealNetwork.h"
 
-UE_DEFINE_GAMEPLAY_TAG(Message_ServerTime, "Message.ServerTime");
-UE_DEFINE_GAMEPLAY_TAG(Message_GameTime, "Message.GameTime");
-UE_DEFINE_GAMEPLAY_TAG(Message_GamePhase, "Message.GamePhase");
-
-UE_DEFINE_GAMEPLAY_TAG(UI_GameTime, "UI.GameTime");
+UE_DEFINE_GAMEPLAY_TAG(Tag_Message_ServerTime, "Message.ServerTime");
+UE_DEFINE_GAMEPLAY_TAG(Tag_Message_GameTime, "Message.GameTime");
+UE_DEFINE_GAMEPLAY_TAG(Tag_Message_GamePhase, "Message.GamePhase");
+UE_DEFINE_GAMEPLAY_TAG(Tag_Message_PlayerArrived, "Message.PlayerArrived");
 
 UGamePhaseComponent::UGamePhaseComponent(const FObjectInitializer& ObjectInitializer)
 	: Super(ObjectInitializer)
 {
-	bRegistered = true;
+	SetIsReplicatedByDefault(true);
 	PrimaryComponentTick.bCanEverTick = true;
-	
 }
 
 float UGamePhaseComponent::GetServerTimeSeconds() const
@@ -40,7 +40,7 @@ void UGamePhaseComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	UE_LOG(LogTemp, Warning, TEXT("UGamePhaseComponent::BeginPlay"));
+	UE_LOG(LogTemp, Log, TEXT("UGamePhaseComponent::BeginPlay"));
 	AGameStateBase* GameState = GetOwner<AGameStateBase>();
 	check(GameState);
 	if (!IsNetMode(NM_Client))
@@ -54,7 +54,6 @@ void UGamePhaseComponent::BeginPlay()
 			GameLife = FCString::Atof(*GameLifeString);
 		}
 	}
-		
 }
 
 void UGamePhaseComponent::ChangePhase(EGamePhase NewPhase)
@@ -62,29 +61,39 @@ void UGamePhaseComponent::ChangePhase(EGamePhase NewPhase)
 	if (NewPhase!= CurrentPhase)
 	{
 		CurrentPhase = NewPhase;
-		UGameplayMessageSubsystem::Get(GetWorld()).BroadcastMessage(Message_GamePhase, FGamePhaseMessage(CurrentPhase));
+		UE_LOG(LogTemp, Log, TEXT("ChangePhase %d"), NewPhase);
+		if (!IsNetMode(NM_DedicatedServer))
+		{
+			for (const FPhaseWidget& WidgetInfo : PhaseWidgets)
+			{
+				if (WidgetInfo.Phase == CurrentPhase)
+				{
+					GetWorld()->GetSubsystem<UUIExtensionSubsystem>()->RegisterExtensionAsWidget(WidgetInfo.SlotTag, WidgetInfo.Widget, WidgetInfo.Priority);
+				}
+			}
+		}
+		UGameplayMessageSubsystem::Get(GetWorld()).BroadcastMessage(Tag_Message_GamePhase, FMessageGamePhase(CurrentPhase));
 	}
 }
 
 
-// Called every frame
 void UGamePhaseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	AGameStateBase* GameState = GetOwner<AGameStateBase>();
 	const float ServerTime = GameState->GetServerWorldTimeSeconds();
-	UGameplayMessageSubsystem::Get(GetWorld()).BroadcastMessage(Message_ServerTime, FServerTimeMessage(ServerTime, DeltaTime));
+	UGameplayMessageSubsystem::Get(GetWorld()).BroadcastMessage(Tag_Message_ServerTime, FMessageServerTime(ServerTime, DeltaTime));
 
 	if (CurrentPhase == EGamePhase::Waiting)
 	{
 		// GameStartTime 服务端计算并复制下来，保证精确
 		if (!IsNetMode(NM_Client))
 		{
-			if (GameState->PlayerArray.Num()>MinGamePlayerNum)
+			if (GameState->PlayerArray.Num()>=MinGamePlayerNum)
 			{
 				GameStartTime = ServerTime + GameReadyTime;
-				ChangePhase(EGamePhase::Ready);
+				OnRep_GameStartTime();
 			}
 		}
 	}
@@ -104,7 +113,7 @@ void UGamePhaseComponent::TickComponent(float DeltaTime, ELevelTick TickType, FA
 		}
 		else
 		{
-			UGameplayMessageSubsystem::Get(GetWorld()).BroadcastMessage(Message_GameTime, FGameTimeMessage(ServerTime-GameStartTime, DeltaTime, RemainTime));
+			UGameplayMessageSubsystem::Get(GetWorld()).BroadcastMessage(Tag_Message_GameTime, FMessageGameTime(ServerTime-GameStartTime, DeltaTime, RemainTime));
 		}
 	}
 }

@@ -35,6 +35,10 @@
 		{
 			"Name": "GameplayMessageRouter",
 			"Enabled": true
+		},
+		{
+			"Name": "UIExtension",
+			"Enabled": true
 		}
 	]
 }
