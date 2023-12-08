@@ -22,9 +22,11 @@ AKillZone::AKillZone()
 void AKillZone::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex,
 	bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (Checkpoint && OtherActor->IsA<ACharacter>())
+	ACharacter* Player = Cast<ACharacter>(OtherActor);
+	if (Checkpoint && Player)
 	{
 		OtherActor->SetActorTransform(Checkpoint->GetRebornTransform());
+		Player->GetController()->SetControlRotation(OtherActor->GetActorRotation());
 		if (UNiagaraSystem* Niagara = Checkpoint->GetSpawnEffect())
 		{
 			UNiagaraFunctionLibrary::SpawnSystemAttached(Niagara, OtherActor->GetRootComponent(), NAME_None,

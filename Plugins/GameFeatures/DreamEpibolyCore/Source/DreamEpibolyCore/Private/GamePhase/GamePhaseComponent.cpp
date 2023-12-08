@@ -2,8 +2,7 @@
 
 
 #include "GamePhaseComponent.h"
-
-#include "UIExtensionSystem.h"
+#include "Blueprint/UserWidget.h"
 #include "GameFramework/GameplayMessageSubsystem.h"
 #include "GameFramework/GameStateBase.h"
 #include "Kismet/GameplayStatics.h"
@@ -23,16 +22,17 @@ UGamePhaseComponent::UGamePhaseComponent(const FObjectInitializer& ObjectInitial
 
 float UGamePhaseComponent::GetServerTimeSeconds() const
 {
-	AGameStateBase* GameState = GetOwner<AGameStateBase>();
-	return GameState->GetServerWorldTimeSeconds();
+	return GetOwner<AGameStateBase>()->GetServerWorldTimeSeconds();
 }
-
 
 float UGamePhaseComponent::GetTimeSecondsSinceGameStart() const
 {
-	AGameStateBase* GameState = GetOwner<AGameStateBase>();
-	const float ServerTime = GameState->GetServerWorldTimeSeconds();
-	return ServerTime-GameStartTime;
+	return GetServerTimeSeconds()-GameStartTime;
+}
+
+float UGamePhaseComponent::GetMinPlayerNum() const
+{
+	return MinGamePlayerNum;
 }
 
 // Called when the game starts
@@ -54,6 +54,14 @@ void UGamePhaseComponent::BeginPlay()
 			GameLife = FCString::Atof(*GameLifeString);
 		}
 	}
+	
+	if (!IsNetMode(NM_DedicatedServer))
+	{
+		UUserWidget* Widget = CreateWidget(GetWorld(), LayoutWidget);
+		Widget->AddToViewport();
+
+		CreatePhaseWidgets();
+	}
 }
 
 void UGamePhaseComponent::ChangePhase(EGamePhase NewPhase)
@@ -62,17 +70,28 @@ void UGamePhaseComponent::ChangePhase(EGamePhase NewPhase)
 	{
 		CurrentPhase = NewPhase;
 		UE_LOG(LogTemp, Log, TEXT("ChangePhase %d"), NewPhase);
-		if (!IsNetMode(NM_DedicatedServer))
-		{
-			for (const FPhaseWidget& WidgetInfo : PhaseWidgets)
-			{
-				if (WidgetInfo.Phase == CurrentPhase)
-				{
-					GetWorld()->GetSubsystem<UUIExtensionSubsystem>()->RegisterExtensionAsWidget(WidgetInfo.SlotTag, WidgetInfo.Widget, WidgetInfo.Priority);
-				}
-			}
-		}
+		CreatePhaseWidgets();
 		UGameplayMessageSubsystem::Get(GetWorld()).BroadcastMessage(Tag_Message_GamePhase, FMessageGamePhase(CurrentPhase));
+	}
+}
+
+void UGamePhaseComponent::CreatePhaseWidgets()
+{
+	if (IsNetMode(NM_DedicatedServer))
+		return;
+
+	for (FUIExtensionHandle& Handle : PhaseWidgetHandles)
+	{
+		Handle.Unregister();
+	}
+	PhaseWidgetHandles.Reset();
+	
+	for (const FPhaseWidget& WidgetInfo : PhaseWidgets)
+	{
+		if (WidgetInfo.Phase == CurrentPhase)
+		{
+			PhaseWidgetHandles.Add(GetWorld()->GetSubsystem<UUIExtensionSubsystem>()->RegisterExtensionAsWidget(WidgetInfo.SlotTag, WidgetInfo.Widget, WidgetInfo.Priority));
+		}
 	}
 }
 

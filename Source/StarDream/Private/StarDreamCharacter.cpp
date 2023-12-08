@@ -77,15 +77,6 @@ void AStarDreamCharacter::SetupPlayerInputComponent(class UInputComponent* Playe
 	PlayerInputComponent->BindAction("ResetVR", IE_Pressed, this, &AStarDreamCharacter::OnResetVR);
 }
 
-void AStarDreamCharacter::PreInitializeComponents()
-{
-	Super::PreInitializeComponents();
-
-	if (GetWorld())
-		GetGameInstance()->GetSubsystem<UGameFrameworkComponentManager>()->AddReceiver(this);
-}
-
-
 void AStarDreamCharacter::OnResetVR()
 {
 	// If StarDream is added to a project via 'Add Feature' in the Unreal Editor the dependency on HeadMountedDisplay in StarDream.Build.cs is not automatically propagated

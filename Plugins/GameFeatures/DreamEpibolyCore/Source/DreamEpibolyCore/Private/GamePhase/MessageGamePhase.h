@@ -67,8 +67,8 @@ struct FMessagePlayerArrived
 	GENERATED_BODY()
 
 	UPROPERTY(BlueprintReadWrite)
-	ACharacter* Player = nullptr;
+	AActor* Player = nullptr;
 
 	FMessagePlayerArrived() {}
-	FMessagePlayerArrived(ACharacter* InPlayer) : Player(InPlayer) {}
+	FMessagePlayerArrived(AActor* InPlayer) : Player(InPlayer) {}
 };

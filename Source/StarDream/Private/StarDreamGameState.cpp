@@ -3,9 +3,6 @@
 
 #include "StarDreamGameState.h"
 
-#include "Components/GameFrameworkComponentManager.h"
-
-
 // Sets default values
 AStarDreamGameState::AStarDreamGameState()
 {
@@ -17,22 +14,9 @@ AStarDreamGameState::AStarDreamGameState()
 void AStarDreamGameState::BeginPlay()
 {
 	Super::BeginPlay();
-
-	GetGameInstance()->GetSubsystem<UGameFrameworkComponentManager>()->AddReceiver(this);
 }
 
 void AStarDreamGameState::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-	GetGameInstance()->GetSubsystem<UGameFrameworkComponentManager>()->RemoveReceiver(this);
-	
 	Super::EndPlay(EndPlayReason);
-}
-
-
-void AStarDreamGameState::PreInitializeComponents()
-{
-	Super::PreInitializeComponents();
-
-	// if (GetWorld())
-	// 	GetGameInstance()->GetSubsystem<UGameFrameworkComponentManager>()->AddReceiver(this);
 }
