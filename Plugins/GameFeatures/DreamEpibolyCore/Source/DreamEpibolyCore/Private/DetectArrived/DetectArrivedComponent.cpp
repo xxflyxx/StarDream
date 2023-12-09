@@ -22,6 +22,9 @@ void UDetectArrivedComponent::BeginPlay()
 	GetOwner()->GetComponents<UShapeComponent>(OverlapComponents);
 	for (UShapeComponent* OverlapComponent : OverlapComponents)
 	{
+		if (OverlapComponent->ComponentHasTag(FName(TEXT("Ignore_DetectArrived"))))
+			continue;
+		
 		if (OverlapComponent->GetCollisionEnabled() == ECollisionEnabled::QueryOnly)
 			OverlapComponent->OnComponentBeginOverlap.AddDynamic(this, &UDetectArrivedComponent::OnOverlapBegin);
 	}

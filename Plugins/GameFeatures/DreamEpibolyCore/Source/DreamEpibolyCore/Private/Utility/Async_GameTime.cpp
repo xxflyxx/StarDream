@@ -36,6 +36,11 @@ void UAsync_GameTime::Cancel()
 
 void UAsync_GameTime::OnGameTime(FGameplayTag, const FMessageGameTime& MessageGameTime)
 {
-	const float ModTime = Mod>0.f ? FMath::Fmod(MessageGameTime.SinceGameStart, Mod) : 0.f;
-	OnTick.Broadcast(MessageGameTime.SinceGameStart, MessageGameTime.DeltaTime, ModTime);
+	if (MessageGameTime.SinceGameStart < Delay)
+		return;
+
+	const float Time = MessageGameTime.SinceGameStart - Delay;
+	const float ModTime = Mod>0.f ? FMath::Fmod(Time, Mod) : 0.f;
+	
+	OnTick.Broadcast(Time, MessageGameTime.DeltaTime, ModTime);
 }

@@ -10,7 +10,6 @@
 UReboundComponent::UReboundComponent()
 {
 	PrimaryComponentTick.bCanEverTick = false;
-	CPF_Config
 }
 
 void UReboundComponent::BeginPlay()
@@ -20,8 +19,9 @@ void UReboundComponent::BeginPlay()
 	GetOwner()->GetComponents<UPrimitiveComponent>(Components);
 	for (UPrimitiveComponent* Component : Components)
 	{
-		if (!Component->IsCollisionEnabled())
-			return;
+		if (!Component->IsCollisionEnabled() || Component->ComponentHasTag(FName(TEXT("Ignore_Rebound"))))
+			continue;
+		
 		Component->OnComponentHit.AddDynamic(this, &UReboundComponent::OnHit);
 	}
 }
