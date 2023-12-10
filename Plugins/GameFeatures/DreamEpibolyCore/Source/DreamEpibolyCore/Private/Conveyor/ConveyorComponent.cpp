@@ -15,7 +15,6 @@ UConveyorComponent::UConveyorComponent()
 void UConveyorComponent::BeginPlay()
 {
 	Super::BeginPlay();
-	SetComponentTickEnabled(false);
 
 	TArray<UShapeComponent*> OverlapComponents;
 	GetOwner()->GetComponents<UShapeComponent>(OverlapComponents);
@@ -43,6 +42,7 @@ void UConveyorComponent::OnOverlapBegin(UPrimitiveComponent* OverlappedComponent
 		ConstantForce->Priority = 5;
 		ConstantForce->Force = OverlappedComponent->GetComponentRotation().Vector() * Speed;
 		ConstantForce->Duration = -1.f;
+		// ConstantForce->FinishVelocityParams.Mode = ERootMotionFinishVelocityMode::SetVelocity;
 		uint16 RootMotionSourceID = Character->GetCharacterMovement()->ApplyRootMotionSource(ConstantForce);
 		ComponentRootSourceIDs.FindOrAdd(OverlappedComponent).MapSourceID.Add(OtherActor, RootMotionSourceID);
 	}

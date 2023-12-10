@@ -47,7 +47,7 @@ void UGamePhaseComponent::BeginPlay()
 	{
 		const FString& OptionsString = GameState->AuthorityGameMode->OptionsString;
 		
-		MinGamePlayerNum = UGameplayStatics::GetIntOption(OptionsString, TEXT("MinPlayerNum"), 1);
+		MinGamePlayerNum = UGameplayStatics::GetIntOption(OptionsString, TEXT("MinPlayerNum"), MinGamePlayerNum);
 		const FString GameLifeString = UGameplayStatics::ParseOption(OptionsString, TEXT("GameLife"));
 		if (GameLifeString.Len()>0)
 		{

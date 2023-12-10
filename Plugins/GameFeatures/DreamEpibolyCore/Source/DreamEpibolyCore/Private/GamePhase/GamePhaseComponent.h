@@ -51,9 +51,12 @@ protected:
 	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	UFUNCTION()
 	void OnRep_GameStartTime();
-	
+
+	UPROPERTY(EditAnywhere)
 	int MinGamePlayerNum = 1;
+	UPROPERTY(EditAnywhere)
 	float GameLife = 60.f;
+	UPROPERTY(EditAnywhere)
 	float GameReadyTime = 10.f;
 	EGamePhase CurrentPhase = EGamePhase::Waiting;
 	TArray<FUIExtensionHandle> PhaseWidgetHandles;
